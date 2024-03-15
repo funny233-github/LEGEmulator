@@ -1,0 +1,3 @@
+[submodule "tests/tinyunit"]
+	path = tests/tinyunit
+	url = git@github.com:funny233-github/tinyunit
