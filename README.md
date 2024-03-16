@@ -1,4 +1,4 @@
-# LEGCPU
+# LEG Eimulator
 A LEG CPU simulator which coding with C. Currently it is a lib for user to link.
 
 # Compile
@@ -22,6 +22,7 @@ After `make` command execute, the lib will compile in `build/src` file which nam
 # Usage
 Assuming you know how to link lib and include header, there is tutorial code:
 ```C
+#include <stdio.h>
 // main lib
 #include "LEGcpu.h"
 // assembly code, also you can make youself's assembly code
@@ -33,7 +34,11 @@ int main()
     
     execute_ticks(1);
     
-    //check register 0
+    // check register 0
     printbit8(reg[0], BINARY);
+    
+    // you can export you code
+    FILE* file = open("test.program","w+")
+    export(file);
 }
 ```
