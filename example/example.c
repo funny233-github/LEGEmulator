@@ -2,69 +2,61 @@
 #include "LEGcpu_assembly_code.h"
 #include <stdbool.h>
 
-int
-main()
+#define FIBB 1 * 4
+#define ELSE 4 * 4
+#define MAIN 17 * 4
+
+const int tmp = REG2;
+const int x = REG1;
+const int res = REG0;
+
+void setup()
 {
-    program[0].ui_value = ADD + IMM2;
-    program[1].ui_value = REG0;
-    program[2].ui_value = 20;
-    program[3].ui_value = REG0;
+    add_code(IF_EQ+IMM12, NOP, NOP, MAIN);
 
-    program[4].ui_value = SUB + IMM2;
-    program[5].ui_value = REG0;
-    program[6].ui_value = 15;
-    program[7].ui_value = REG1;
+    // fibb(x)
+    // if x <= 2:
+    //      res = 1
+    //      return res
+    // res = fibb(x - 1)
+    // res += fibb(x - 2)
+    // return res
+    // FIBB
+    add_code(IF_G+IMM2,x, 2, ELSE);
+    add_code(IMM12, 1, NOP, res);
+    add_code(RET, NOP, NOP, NOP);
+    // ELSE
+    add_code(PUSH+IMM2, x, NOP, NOP);
+    add_code(SUB+IMM2, x, 1, x);
+    add_code(CALL, NOP, NOP, FIBB);
+    add_code(POP, NOP, NOP, x);
 
-    program[8].ui_value = IMM12;
-    program[9].ui_value = 14;
-    program[10].ui_value = 5;
-    program[11].ui_value = MEMADDR;
+    add_code(PUSH+IMM2, x, NOP, NOP);
+    add_code(PUSH+IMM2, res, NOP, NOP);
+    add_code(SUB+IMM2, x, 2, x);
+    add_code(CALL, NOP, NOP, FIBB);
+    add_code(ADD+IMM2, res, NOP, tmp);
+    add_code(POP, NOP, NOP, res);
+    add_code(POP, NOP, NOP, x);
+    add_code(ADD, tmp, res, res);
 
-    program[12].ui_value = SAVE + IMM12;
-    program[13].ui_value = 114;
-    program[14].ui_value = NOP;
-    program[15].ui_value = NOP;
+    add_code(RET, NOP, NOP, NOP);
+    // main
+    // fibb(13) expected result 233
+    // MAIN
+    add_code(ADD+IMM12, 13, NOP, x);
+    add_code(CALL, NOP, NOP, FIBB);
+    add_code(ADD+IMM2, res, NOP, OUTPUT);
+}
 
-    program[16].ui_value = PUSH + IMM12;
-    program[17].ui_value = 115;
-    program[18].ui_value = NOP;
-    program[19].ui_value = NOP;
-
-    program[20].ui_value = PUSH + IMM12;
-    program[21].ui_value = 12;
-    program[22].ui_value = NOP;
-    program[23].ui_value = NOP;
-
-    program[24].ui_value = POP;
-    program[25].ui_value = NOP;
-    program[26].ui_value = NOP;
-    program[27].ui_value = REG3;
-
-    print_program(BINARY);
-
-    execute_ticks(1);
-
-    printf("\n");
-    printbit8(reg[0], UNSIGNED);
-    printf("\n");
-
-    execute_ticks(1);
-    printf("\n");
-    printbit8(reg[1], UNSIGNED);
-    printf("\n");
-
-    execute_ticks(2);
-    printbit8(reg[13], UNSIGNED);
-    printf("\n");
-    print_memory(UNSIGNED);
-
-    execute_ticks(2);
-    printf("\n");
-    print_stack(UNSIGNED);
-    printf("\n");
-
-    execute_ticks(1);
-    printf("\n");
-    printbit8(reg[3], UNSIGNED);
-    printf("\n");
+int main()
+{
+    setup();
+    static int cnt = 0;
+    while (output.ui_value == 0) {
+        execute_ticks(1);
+        cnt++;
+        printf("%d tick, counter is %d\n", cnt, counter.ui_value);
+    }
+    printbit8(output, UNSIGNED);
 }
