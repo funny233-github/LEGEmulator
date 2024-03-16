@@ -162,116 +162,27 @@ internal_write(bit8_t addr, bit8_t value, bit8_t opcode)
 {
     if (opcode.cond == 1 || opcode.f4 == 1 || opcode.func == 0b0101)
         return;
-    switch (addr.ui_value) {
-    case 0:
-        reg[0] = value;
-        break;
-    case 1:
-        reg[1] = value;
-        break;
-    case 2:
-        reg[2] = value;
-        break;
-    case 3:
-        reg[3] = value;
-        break;
-    case 4:
-        reg[4] = value;
-        break;
-    case 5:
-        reg[5] = value;
-        break;
-    case 6:
+    if (addr.ui_value < 6)
+        reg[addr.ui_value] = value;
+    else if (addr.ui_value == 6)
         counter = value;
-        break;
-    case 7:
+    else if (addr.ui_value == 7)
         output = value;
-        break;
-    case 8:
-        reg[6] = value;
-        break;
-    case 9:
-        reg[7] = value;
-        break;
-    case 10:
-        reg[8] = value;
-        break;
-    case 11:
-        reg[9] = value;
-        break;
-    case 12:
-        reg[10] = value;
-        break;
-    case 13:
-        reg[11] = value;
-        break;
-    case 14:
-        reg[12] = value;
-        break;
-    case 15:
-        reg[13] = value;
-        break;
-    default:
-        break;
-    }
+    else if (addr.ui_value > 7 && addr.ui_value < 16)
+        reg[addr.ui_value - 2] = value;
 }
 
 static void
 internal_read(bit8_t addr, bit8_t* output)
 {
-    switch (addr.ui_value) {
-    case 0:
-        *output = reg[0];
-        break;
-    case 1:
-        *output = reg[1];
-        break;
-    case 2:
-        *output = reg[2];
-        break;
-    case 3:
-        *output = reg[3];
-        break;
-    case 4:
-        *output = reg[4];
-        break;
-    case 5:
-        *output = reg[5];
-        break;
-    case 6:
+    if (addr.ui_value < 6)
+        *output = reg[addr.ui_value];
+    else if (addr.ui_value == 6)
         *output = counter;
-        break;
-    case 7:
+    else if (addr.ui_value == 7)
         *output = input;
-        break;
-    case 8:
-        *output = reg[6];
-        break;
-    case 9:
-        *output = reg[7];
-        break;
-    case 10:
-        *output = reg[8];
-        break;
-    case 11:
-        *output = reg[9];
-        break;
-    case 12:
-        *output = reg[10];
-        break;
-    case 13:
-        *output = reg[11];
-        break;
-    case 14:
-        *output = reg[12];
-        break;
-    case 15:
-        *output = reg[13];
-        break;
-    default:
-        output->ui_value = 0;
-        break;
-    }
+    else if (addr.ui_value > 7 && addr.ui_value < 16)
+        *output = reg[addr.ui_value - 2];
 }
 
 static void

@@ -13,6 +13,11 @@ bit8_t* internals[16] = {
         add_code(ADD + IMM12, 12, NOP, internal);                              \
         execute_ticks(1);                                                      \
         TU_ASSERT_INT_EQ((*internals[internal]).ui_value, 12);                 \
+        reset_cpu();                                                           \
+        add_code(ADD + IMM2, internal, 5, internal);                           \
+        execute_ticks(1);                                                      \
+        if (internal != OUTPUT)                                                \
+            TU_ASSERT_INT_EQ((*internals[internal]).ui_value, 5);              \
     }
 
 TU_TEST(tu_setup) {}

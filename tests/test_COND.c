@@ -115,6 +115,13 @@ TU_TEST(test_IF_G_EQ)
     TU_ASSERT_INT_EQ(counter.ui_value, 4);
 }
 
+TU_TEST(test_UNUSE)
+{
+    add_code(IF_G_EQ + IMM12 + 1, 11, 22, 0);
+    execute_ticks(1);
+    TU_ASSERT_INT_EQ(counter.ui_value, 8);
+}
+
 int
 main()
 {
@@ -124,5 +131,6 @@ main()
     TU_RUN(test_IF_L_EQ);
     TU_RUN(test_IF_G);
     TU_RUN(test_IF_G_EQ);
+    TU_RUN(test_UNUSE);
     return TU_EXIT_CODE;
 }
