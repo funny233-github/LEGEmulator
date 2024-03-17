@@ -35,7 +35,7 @@ int main()
     execute_ticks(1);
     
     // check register 0
-    printbit8(reg[0], BINARY);
+    printbit8(legcpu.reg[0], BINARY);
     
     // you can export you code
     FILE* file = open("test.program","w+")
