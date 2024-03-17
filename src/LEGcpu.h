@@ -32,14 +32,14 @@ typedef union
     }; // use to determine code which use function
 } bit8_t;
 
-extern bit8_t counter;
-extern bit8_t input;
-extern bit8_t output;
-extern bit8_t reg[14];
-extern bit8_t program[256];
-extern bit8_t memory[256];
-extern bit8_t stack[256];
-extern bit8_t stack_top;
+PUBLIC(extern bit8_t) counter;
+PUBLIC(extern bit8_t) input;
+PUBLIC(extern bit8_t) output;
+PUBLIC(extern bit8_t) reg[14];
+PUBLIC(extern bit8_t) program[256];
+PUBLIC(extern bit8_t) memory[256];
+PUBLIC(extern bit8_t) stack[256];
+PUBLIC(extern bit8_t) stack_top;
 
 PUBLIC(void) printbit8(bit8_t value, ftype format);
 PUBLIC(void) print_program(ftype format);

@@ -3,14 +3,14 @@
 #include <stdlib.h>
 
 static uint8_t cursor = 0;
-bit8_t counter = { .ui_value = 0 };
-bit8_t input = { .ui_value = 0 };
-bit8_t output = { .ui_value = 0 };
-bit8_t reg[14];
-bit8_t program[256];
-bit8_t memory[256];
-bit8_t stack[256];
-bit8_t stack_top;
+PUBLIC(bit8_t) counter = { .ui_value = 0 };
+PUBLIC(bit8_t) input = { .ui_value = 0 };
+PUBLIC(bit8_t) output = { .ui_value = 0 };
+PUBLIC(bit8_t) reg[14];
+PUBLIC(bit8_t) program[256];
+PUBLIC(bit8_t) memory[256];
+PUBLIC(bit8_t) stack[256];
+PUBLIC(bit8_t) stack_top;
 
 PUBLIC(void) printbit8(bit8_t value, ftype format)
 {
