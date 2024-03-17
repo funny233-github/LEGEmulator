@@ -15,7 +15,7 @@ TU_TEST(test_ADD)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 12);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 12);
 }
 
 TU_TEST(test_SUB)
@@ -24,7 +24,7 @@ TU_TEST(test_SUB)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 8);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 8);
 }
 
 TU_TEST(test_AND)
@@ -33,7 +33,7 @@ TU_TEST(test_AND)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 0b00001000);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 0b00001000);
 }
 
 TU_TEST(test_OR)
@@ -42,7 +42,7 @@ TU_TEST(test_OR)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 0b00001110);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 0b00001110);
 }
 
 TU_TEST(test_NOT)
@@ -51,7 +51,7 @@ TU_TEST(test_NOT)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 0b01010010);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 0b01010010);
 }
 
 TU_TEST(test_XOR)
@@ -60,7 +60,7 @@ TU_TEST(test_XOR)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 0b00000110);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 0b00000110);
 }
 
 TU_TEST(test_SHL)
@@ -69,7 +69,7 @@ TU_TEST(test_SHL)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 0b01100000);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 0b01100000);
 }
 
 TU_TEST(test_SHR)
@@ -78,7 +78,7 @@ TU_TEST(test_SHR)
 
     execute_ticks(1);
 
-    TU_ASSERT_INT_EQ(reg[0].ui_value, 0b00001001);
+    TU_ASSERT_INT_EQ(legcpu.reg[0].ui_value, 0b00001001);
 }
 
 int

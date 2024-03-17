@@ -25,10 +25,10 @@ TU_TEST(test_CALL_RET)
     add_code(ADD + IMM2, REG0, NOP, OUTPUT);
 
     execute_ticks(4);
-    TU_ASSERT_INT_EQ(counter.ui_value, 4);
+    TU_ASSERT_INT_EQ(legcpu.counter.ui_value, 4);
     execute_ticks(3);
 
-    TU_ASSERT_INT_EQ(output.ui_value, 27);
+    TU_ASSERT_INT_EQ(legcpu.output.ui_value, 27);
 }
 
 int

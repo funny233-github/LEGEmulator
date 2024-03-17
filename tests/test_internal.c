@@ -3,8 +3,10 @@
 #include "tinyunit.h"
 
 bit8_t* internals[16] = {
-    &reg[0], &reg[1], &reg[2], &reg[3], &reg[4],  &reg[5],  &counter, &output,
-    &reg[6], &reg[7], &reg[8], &reg[9], &reg[10], &reg[11], &reg[12], &reg[13],
+    &legcpu.reg[0],  &legcpu.reg[1],  &legcpu.reg[2],  &legcpu.reg[3],
+    &legcpu.reg[4],  &legcpu.reg[5],  &legcpu.counter, &legcpu.output,
+    &legcpu.reg[6],  &legcpu.reg[7],  &legcpu.reg[8],  &legcpu.reg[9],
+    &legcpu.reg[10], &legcpu.reg[11], &legcpu.reg[12], &legcpu.reg[13],
 };
 
 #define TEST_INTERNAL(internal)                                                \

@@ -3,14 +3,21 @@
 #include <stdlib.h>
 
 static uint8_t cursor = 0;
-PUBLIC(bit8_t) counter = { .ui_value = 0 };
-PUBLIC(bit8_t) input = { .ui_value = 0 };
-PUBLIC(bit8_t) output = { .ui_value = 0 };
-PUBLIC(bit8_t) reg[14];
-PUBLIC(bit8_t) program[256];
-PUBLIC(bit8_t) memory[256];
-PUBLIC(bit8_t) stack[256];
-PUBLIC(bit8_t) stack_top;
+PUBLIC(monitored)
+legcpu = {
+    .input = {},
+    .output = {},
+
+    .reg = {},
+
+    .counter = {},
+    .program = {},
+
+    .memory = {},
+
+    .stack = {},
+    .stack_top = {},
+};
 
 PUBLIC(void) printbit8(bit8_t value, ftype format)
 {
@@ -52,17 +59,17 @@ print_bit8_grid(bit8_t* grid, ftype format)
 
 PUBLIC(void) print_program(ftype format)
 {
-    print_bit8_grid(program, format);
+    print_bit8_grid(legcpu.program, format);
 }
 
 PUBLIC(void) print_memory(ftype format)
 {
-    print_bit8_grid(memory, format);
+    print_bit8_grid(legcpu.memory, format);
 }
 
 PUBLIC(void) print_stack(ftype format)
 {
-    print_bit8_grid(stack, format);
+    print_bit8_grid(legcpu.stack, format);
 }
 
 PUBLIC(void) import_program_from_file(FILE* file)
@@ -73,7 +80,7 @@ PUBLIC(void) import_program_from_file(FILE* file)
     }
     for (int i = 0; i < 256; i++) {
         bit8_t value = { .ui_value = fgetc(file) };
-        program[i] = value;
+        legcpu.program[i] = value;
     }
 }
 
@@ -84,7 +91,7 @@ PUBLIC(void) export_program_to_file(FILE* file)
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < 256; i++) {
-        bit8_t value = program[i];
+        bit8_t value = legcpu.program[i];
         fputc(value.ui_value, file);
     }
 }
@@ -163,36 +170,36 @@ internal_write(bit8_t addr, bit8_t value, bit8_t opcode)
     if (opcode.cond == 1 || opcode.f4 == 1 || opcode.func == 0b0101)
         return;
     if (addr.ui_value < 6)
-        reg[addr.ui_value] = value;
+        legcpu.reg[addr.ui_value] = value;
     else if (addr.ui_value == 6)
-        counter = value;
+        legcpu.counter = value;
     else if (addr.ui_value == 7)
-        output = value;
+        legcpu.output = value;
     else if (addr.ui_value > 7 && addr.ui_value < 16)
-        reg[addr.ui_value - 2] = value;
+        legcpu.reg[addr.ui_value - 2] = value;
 }
 
 static void
 internal_read(bit8_t addr, bit8_t* output)
 {
     if (addr.ui_value < 6)
-        *output = reg[addr.ui_value];
+        *output = legcpu.reg[addr.ui_value];
     else if (addr.ui_value == 6)
-        *output = counter;
+        *output = legcpu.counter;
     else if (addr.ui_value == 7)
-        *output = input;
+        *output = legcpu.input;
     else if (addr.ui_value > 7 && addr.ui_value < 16)
-        *output = reg[addr.ui_value - 2];
+        *output = legcpu.reg[addr.ui_value - 2];
 }
 
 static void
 memory_control(bit8_t opcode, bit8_t* io)
 {
     if (opcode.xx == 0b10) {
-        memory[reg[13].ui_value] = *io;
+        legcpu.memory[legcpu.reg[13].ui_value] = *io;
     }
     if (opcode.xx == 0b01 && opcode.tail == 0b000) {
-        *io = memory[reg[13].ui_value];
+        *io = legcpu.memory[legcpu.reg[13].ui_value];
     }
 
     return;
@@ -203,14 +210,14 @@ stack_control(bit8_t opcode, bit8_t* io)
 {
     if ((opcode.xx == 0b11) ||
         (opcode.func == 0b0101 && opcode.the_tail == 0)) {
-        stack[stack_top.ui_value] = *io;
-        stack_top.ui_value++;
+        legcpu.stack[legcpu.stack_top.ui_value] = *io;
+        legcpu.stack_top.ui_value++;
     }
 
     if ((opcode.xx == 0b01 && opcode.tail == 0b001) ||
         (opcode.func == 0b0101 && opcode.the_tail == 1)) {
-        stack_top.ui_value--;
-        *io = stack[stack_top.ui_value];
+        legcpu.stack_top.ui_value--;
+        *io = legcpu.stack[legcpu.stack_top.ui_value];
     }
 
     return;
@@ -219,10 +226,10 @@ stack_control(bit8_t opcode, bit8_t* io)
 static void
 execute()
 {
-    bit8_t opcode = program[counter.ui_value];
-    bit8_t attr1 = program[counter.ui_value + 1];
-    bit8_t attr2 = program[counter.ui_value + 2];
-    bit8_t addr = program[counter.ui_value + 3];
+    bit8_t opcode = legcpu.program[legcpu.counter.ui_value];
+    bit8_t attr1 = legcpu.program[legcpu.counter.ui_value + 1];
+    bit8_t attr2 = legcpu.program[legcpu.counter.ui_value + 2];
+    bit8_t addr = legcpu.program[legcpu.counter.ui_value + 3];
 
     bit8_t attr1_value[1] = { 0 };
     bit8_t attr2_value[1] = { 0 };
@@ -247,7 +254,7 @@ execute()
     bool isret = opcode.func == 0b0101 && opcode.the_tail == 1;
 
     if (iscall) {
-        ALU_ret->ui_value = counter.ui_value + 4;
+        ALU_ret->ui_value = legcpu.counter.ui_value + 4;
     }
 
     memory_control(opcode, ALU_ret);
@@ -259,10 +266,10 @@ execute()
     }
 
     if (*COND_ret || iscall || isret || addr.ui_value == 6) {
-        counter = *ALU_ret;
+        legcpu.counter = *ALU_ret;
         return;
     }
-    counter.ui_value += 4;
+    legcpu.counter.ui_value += 4;
 }
 
 PUBLIC(void) execute_ticks(int tick)
@@ -275,27 +282,27 @@ PUBLIC(void) execute_ticks(int tick)
 PUBLIC(void)
 add_code(uint8_t opcode, uint8_t attr1, uint8_t attr2, uint8_t addr)
 {
-    program[cursor].ui_value = opcode;
-    program[cursor + 1].ui_value = attr1;
-    program[cursor + 2].ui_value = attr2;
-    program[cursor + 3].ui_value = addr;
+    legcpu.program[cursor].ui_value = opcode;
+    legcpu.program[cursor + 1].ui_value = attr1;
+    legcpu.program[cursor + 2].ui_value = attr2;
+    legcpu.program[cursor + 3].ui_value = addr;
     cursor += 4;
 }
 
 PUBLIC(void) reset_cpu()
 {
     cursor = 0;
-    counter.ui_value = 0;
-    input.ui_value = 0;
-    output.ui_value = 0;
-    stack_top.ui_value = 0;
+    legcpu.counter.ui_value = 0;
+    legcpu.input.ui_value = 0;
+    legcpu.output.ui_value = 0;
+    legcpu.stack_top.ui_value = 0;
 
     for (int i = 0; i < 256; i++) {
         if (i < 14)
-            reg[i].ui_value = 0;
+            legcpu.reg[i].ui_value = 0;
 
-        program[i].ui_value = 0;
-        memory[i].ui_value = 0;
-        stack[i].ui_value = 0;
+        legcpu.program[i].ui_value = 0;
+        legcpu.memory[i].ui_value = 0;
+        legcpu.stack[i].ui_value = 0;
     }
 }

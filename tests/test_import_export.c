@@ -26,10 +26,10 @@ TU_TEST(test_import)
     TU_ASSERT(readfile != NULL, "error while open file");
     import_program_from_file(readfile);
 
-    TU_ASSERT_INT_EQ(program[0].ui_value, ADD + IMM12);
-    TU_ASSERT_INT_EQ(program[1].ui_value, 15);
-    TU_ASSERT_INT_EQ(program[2].ui_value, NOP);
-    TU_ASSERT_INT_EQ(program[3].ui_value, REG0);
+    TU_ASSERT_INT_EQ(legcpu.program[0].ui_value, ADD + IMM12);
+    TU_ASSERT_INT_EQ(legcpu.program[1].ui_value, 15);
+    TU_ASSERT_INT_EQ(legcpu.program[2].ui_value, NOP);
+    TU_ASSERT_INT_EQ(legcpu.program[3].ui_value, REG0);
 
     fclose(readfile);
     readfile = NULL;

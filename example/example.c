@@ -53,10 +53,10 @@ int main()
 {
     setup();
     static int cnt = 0;
-    while (output.ui_value == 0) {
+    while (legcpu.output.ui_value == 0) {
         execute_ticks(1);
         cnt++;
-        printf("%d tick, counter is %d\n", cnt, counter.ui_value);
+        printf("%d tick, counter is %d\n", cnt, legcpu.counter.ui_value);
     }
-    printbit8(output, UNSIGNED);
+    printbit8(legcpu.output, UNSIGNED);
 }
